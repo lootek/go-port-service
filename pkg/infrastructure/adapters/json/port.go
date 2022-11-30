@@ -18,23 +18,23 @@ type Port struct {
 	Code        string     `json:"code,omitempty"`
 }
 
-func ToJSON(p domain.Port) Port {
-	return Port{
-		ID:          p.ID,
-		Name:        p.Name,
-		City:        p.City,
-		Country:     p.Country,
-		Alias:       p.Alias,
-		Regions:     p.Regions,
-		Coordinates: p.Coordinates,
-		Province:    p.Province,
-		Timezone:    p.Timezone,
-		Unlocs:      p.Unlocs,
-		Code:        p.Code,
+func (p *Port) FromDomain(dp domain.Port) {
+	p = &Port{
+		ID:          dp.ID,
+		Name:        dp.Name,
+		City:        dp.City,
+		Country:     dp.Country,
+		Alias:       dp.Alias,
+		Regions:     dp.Regions,
+		Coordinates: dp.Coordinates,
+		Province:    dp.Province,
+		Timezone:    dp.Timezone,
+		Unlocs:      dp.Unlocs,
+		Code:        dp.Code,
 	}
 }
 
-func FromJSON(p Port) domain.Port {
+func (p *Port) ToDomain() domain.Port {
 	return domain.Port{
 		ID:          p.ID,
 		Name:        p.Name,
