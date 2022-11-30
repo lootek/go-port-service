@@ -1,0 +1,14 @@
+services:
+  mongodb:
+    image: mongo:5.0.14
+    volumes:
+      - db-data:/data/db
+    ports:
+      - 27017:27017
+
+  portsd:
+    depends_on:
+      - mongodb
+
+volumes:
+  db-data:

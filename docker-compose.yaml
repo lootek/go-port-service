@@ -1,0 +1,9 @@
+services:
+  portsd:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: lootek/go-port-service:latest
+    command:
+    ports:
+      - 8000:8000
