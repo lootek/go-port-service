@@ -67,4 +67,5 @@ What I'd do next if I could:
 * add more tests
   * for core/ maybe use goconvey to make the tests more readable for non-technical people
   * tests for update logic in repository
+  * tests for resilience to malicious input (fuzz tests would be handy here)
 * add input validation to the service implementation in core/
