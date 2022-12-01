@@ -1,6 +1,6 @@
 # Go port storage service
 
-This is a playground for a simple Go application following DDD/Clean arch principles.
+This is a playground for a simple Go application following DDD, SOLID, Clean/Hex arch principles.
 
 # Domain requirements
 
