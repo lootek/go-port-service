@@ -57,3 +57,14 @@ Leaving aside I'm not used to the rare occasion of creating a software service t
 I love how the code looks like when it's nicely organized according to SOLID, DDD, clean/hex arch principles, 
 yet I was not fortunate enough to be able to work on such code at work since we do have lots of legacy Go codebases 
 that not really adhere to those.
+
+What I'd do next if I could:
+* try actually running this
+  * locally
+  * using docker/docker-compose
+  * try out the REST server via uploading ports,json file couple times (the same and with some slight changes)
+  * try running against mongodb (that needs some actual implementation for the mongo-based repository)
+* add more tests
+  * for core/ maybe use goconvey to make the tests more readable for non-technical people
+  * tests for update logic in repository
+* add input validation to the service implementation in core/
