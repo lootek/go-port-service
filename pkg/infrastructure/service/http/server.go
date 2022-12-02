@@ -59,7 +59,7 @@ func (s *Server) Stop() {
 }
 
 func (s *Server) GetAll(c *gin.Context) {
-	ports := s.portService.List()
+	ports, _ := s.portService.List()
 
 	result := make([]jsonadapter.Port, len(ports), len(ports))
 	for i, p := range ports {
