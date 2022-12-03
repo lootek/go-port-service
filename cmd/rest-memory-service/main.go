@@ -14,7 +14,7 @@ func main() {
 	ctx, cancelFn := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancelFn()
 
-	portsRepo := memory.NewStorage()
+	portsRepo := memory.NewStorage(ctx)
 	portsApp := application.NewPorts(portsRepo)
 	httpSrv := http.NewServer(portsApp)
 

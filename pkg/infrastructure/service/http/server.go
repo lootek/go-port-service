@@ -37,7 +37,7 @@ func (s *Server) Run(ctx context.Context) {
 	s.srvShutdown = func() {
 		err := srv.Shutdown(ctx)
 		if err != nil {
-			log.Printf("HTTP server shutdown failed: %s\n", err)
+			log.Printf("HTTP server graceful shutdown failed: %s\n", err)
 		}
 	}
 
@@ -47,7 +47,7 @@ func (s *Server) Run(ctx context.Context) {
 	s.httpRouter.PUT("/ports/:id", s.Update)
 
 	go func() {
-		if err := srv.ListenAndServe(); err != nil {
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Printf("HTTP server error: %s\n", err)
 		}
 	}()
