@@ -18,6 +18,5 @@ type Service interface {
 
 type PortRepository interface {
 	List() []domain.Port
-	Add(port domain.Port) error
-	Update(id string, port domain.Port) error
+	Upsert(port []domain.Port) error
 }

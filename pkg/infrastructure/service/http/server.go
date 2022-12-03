@@ -10,6 +10,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/lootek/go-port-service/pkg/core/domain"
 	"github.com/lootek/go-port-service/pkg/core/services/app"
 	jsonadapter "github.com/lootek/go-port-service/pkg/infrastructure/adapters/json"
 )
@@ -20,11 +21,17 @@ type Server struct {
 	srvShutdown func()
 }
 
-func NewServer(srv app.PortService) *Server {
-	return &Server{
-		portService: srv,
+func NewServer(portsApp app.PortService) *Server {
+	s := &Server{
+		portService: portsApp,
 		httpRouter:  gin.New(),
 	}
+
+	s.httpRouter.MaxMultipartMemory = 16 << 20 // 16 MiB
+	s.httpRouter.GET("/ports", s.GetAll)
+	s.httpRouter.POST("/ports", s.Upsert)
+
+	return s
 }
 
 func (s *Server) Run(ctx context.Context) {
@@ -33,6 +40,9 @@ func (s *Server) Run(ctx context.Context) {
 	srv := &http.Server{
 		Addr:    ":8000",
 		Handler: s.httpRouter,
+
+		// TODO: Add TLS support
+		TLSConfig: nil,
 	}
 	s.srvShutdown = func() {
 		err := srv.Shutdown(ctx)
@@ -40,11 +50,6 @@ func (s *Server) Run(ctx context.Context) {
 			log.Printf("HTTP server shutdown failed: %s\n", err)
 		}
 	}
-
-	s.httpRouter.MaxMultipartMemory = 16 << 20 // 16 MiB
-	s.httpRouter.GET("/ports", s.GetAll)
-	s.httpRouter.POST("/ports", s.Add)
-	s.httpRouter.PUT("/ports/:id", s.Update)
 
 	go func() {
 		if err := srv.ListenAndServe(); err != nil {
@@ -78,30 +83,26 @@ func (s *Server) GetAll(c *gin.Context) {
 	}
 }
 
-func (s *Server) Add(c *gin.Context) {
-	// file, err := c.FormFile("ports")
-	// if err != nil {
-	// 	_ = c.AbortWithError(http.StatusBadRequest, err)
-	// 	return
-	// }
-
-	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, 32<<20+1024)
-	reader, err := c.Request.MultipartReader()
+func (s *Server) Upsert(c *gin.Context) {
+	fh, err := c.FormFile("ports")
 	if err != nil {
 		_ = c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	p, _ := reader.NextPart()
-	for {
-		if p.FormName() == "file_field" {
-			break
-		}
-		p, _ = reader.NextPart()
+	file, err := fh.Open()
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
 	}
 
-	buf := bufio.NewReader(p)
-	sniff, _ := buf.Peek(512)
+	buf := bufio.NewReader(file)
+	sniff, err := buf.Peek(512)
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
 	contentType := http.DetectContentType(sniff)
 	if contentType != "application/json" {
 		if err != nil {
@@ -110,20 +111,27 @@ func (s *Server) Add(c *gin.Context) {
 		}
 
 		var maxSize int64 = 32 << 20
-		mr := io.MultiReader(buf, io.LimitReader(p, maxSize-511))
+		mr := io.MultiReader(buf, io.LimitReader(file, maxSize-511))
 		dec := json.NewDecoder(mr)
 
-		var ports []jsonadapter.Port
-		err := dec.Decode(&ports)
+		var portsJSON []jsonadapter.Port
+		err := dec.Decode(&portsJSON)
 		if err != nil {
 			_ = c.AbortWithError(http.StatusBadRequest, err)
 			return
 		}
 
+		ports := make([]domain.Port, 0, len(portsJSON))
+		for _, pj := range portsJSON {
+			ports = append(ports, pj.ToDomain())
+		}
+
+		err = s.portService.Upsert(ports)
+		if err != nil {
+			_ = c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+
 		c.Status(http.StatusOK)
 	}
-}
-
-func (s *Server) Update(c *gin.Context) {
-	// TODO
 }
