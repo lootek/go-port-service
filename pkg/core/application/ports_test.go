@@ -22,12 +22,12 @@ func TestPorts_Add(t *testing.T) {
 	p.Run(context.TODO())
 	defer p.Stop()
 
-	err := p.Add(p1)
+	_, err := p.Add(p1)
 	require.NoError(t, err)
 	require.Len(t, p.List(), 1)
 	require.Equal(t, p1, p.List()[0])
 
-	err = p.Add(p2)
+	_, err = p.Add(p2)
 	require.NoError(t, err)
 	require.Len(t, p.List(), 2)
 }

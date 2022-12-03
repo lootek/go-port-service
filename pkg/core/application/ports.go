@@ -21,11 +21,11 @@ func NewPorts(r repository.Port) *Ports {
 	return &Ports{repo: r}
 }
 
-func (p *Ports) List() []domain.Port {
-	return p.repo.GetAll()
+func (p *Ports) List() ([]domain.Port, error) {
+	return p.repo.GetAll(), nil
 }
 
-func (p *Ports) Add(port domain.Port) error {
+func (p *Ports) Add(port domain.Port) (string, error) {
 	return p.repo.Insert(port)
 }
 
