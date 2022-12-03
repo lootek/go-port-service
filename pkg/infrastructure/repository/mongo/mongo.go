@@ -16,12 +16,7 @@ func (D DB) GetAll() []domain.Port {
 	panic("implement me")
 }
 
-func (D DB) Insert(port domain.Port) error {
-	// TODO implement me
-	panic("implement me")
-}
-
-func (D DB) Update(id string, port domain.Port) error {
+func (D DB) Upsert(port []domain.Port) error {
 	// TODO implement me
 	panic("implement me")
 }

@@ -25,10 +25,6 @@ func (p *Ports) List() []domain.Port {
 	return p.repo.GetAll()
 }
 
-func (p *Ports) Add(port domain.Port) error {
-	return p.repo.Insert(port)
-}
-
-func (p *Ports) Update(id string, port domain.Port) error {
-	return p.Update(id, port)
+func (p *Ports) Upsert(port []domain.Port) error {
+	return p.repo.Upsert(port)
 }

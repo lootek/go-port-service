@@ -6,6 +6,5 @@ import (
 
 type Port interface {
 	GetAll() []domain.Port
-	Insert(port domain.Port) error
-	Update(id string, port domain.Port) error
+	Upsert(port []domain.Port) error
 }

@@ -1,6 +1,7 @@
 package memory
 
 import (
+	"sort"
 	"sync"
 
 	"github.com/google/uuid"
@@ -27,27 +28,26 @@ func (s *Storage) GetAll() []domain.Port {
 		result = append(result, v)
 	}
 
+	sort.Slice(result, func(i, j int) bool {
+		return result[i].ID < result[j].ID
+	})
+
 	return result
 }
 
-func (s *Storage) Insert(p domain.Port) error {
-	id := p.ID
-	if id == "" {
-		id = uuid.NewString()
+func (s *Storage) Upsert(ports []domain.Port) error {
+	for _, p := range ports {
+		id := p.ID
+		if id == "" {
+			id = uuid.NewString()
+		}
+
+		// Make the synchronization block as narrow as possible
+		// to allow future parallelization for the better performance
+		s.dataMu.Lock()
+		s.data[id] = p
+		s.dataMu.Unlock()
 	}
-
-	return s.upsert(id, p)
-}
-
-func (s *Storage) Update(id string, p domain.Port) error {
-	return s.upsert(id, p)
-}
-
-func (s *Storage) upsert(id string, p domain.Port) error {
-	s.dataMu.Lock()
-	defer s.dataMu.Unlock()
-
-	s.data[id] = p
 
 	return nil
 }
