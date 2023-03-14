@@ -19,7 +19,7 @@ func NewStorage(_ context.Context) *Storage {
 	}
 }
 
-func (s *Storage) GetAll() []domain.Port {
+func (s *Storage) GetAll() ([]domain.Port, error) {
 	s.dataMu.RLock()
 	defer s.dataMu.RUnlock()
 
@@ -28,10 +28,10 @@ func (s *Storage) GetAll() []domain.Port {
 		result = append(result, v)
 	}
 
-	return result
+	return result, nil
 }
 
-func (s *Storage) Insert(p domain.Port) error {
+func (s *Storage) Insert(p domain.Port) (string, error) {
 	id := p.ID
 	if id == "" {
 		id = uuid.NewString()
@@ -41,14 +41,15 @@ func (s *Storage) Insert(p domain.Port) error {
 }
 
 func (s *Storage) Update(id string, p domain.Port) error {
-	return s.upsert(id, p)
+	_, err := s.upsert(id, p)
+	return err
 }
 
-func (s *Storage) upsert(id string, p domain.Port) error {
+func (s *Storage) upsert(id string, p domain.Port) (string, error) {
 	s.dataMu.Lock()
 	defer s.dataMu.Unlock()
 
 	s.data[id] = p
 
-	return nil
+	return id, nil
 }
