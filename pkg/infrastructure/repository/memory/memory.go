@@ -1,6 +1,7 @@
 package memory
 
 import (
+	"context"
 	"sync"
 
 	"github.com/google/uuid"
@@ -12,7 +13,7 @@ type Storage struct {
 	data   map[string]domain.Port
 }
 
-func NewStorage() *Storage {
+func NewStorage(_ context.Context) *Storage {
 	return &Storage{
 		data: map[string]domain.Port{},
 	}
