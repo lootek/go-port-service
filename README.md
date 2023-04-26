@@ -51,14 +51,14 @@ This is a playground for a simple Go application following DDD, SOLID, Clean/Hex
 
 # Disclaimer
 
-At the time of writing I'm honestly quite unhappy with the result. I wish I had more time and focus to this but life is life.
-I must admit I just had to hard stop to get back to my regular work and did't even run that stuff (shame on me).
-Leaving aside I'm not used to the rare occasion of creating a software service totally from scratch it was a pretty nice brain exercise. 
-I love how the code looks like when it's nicely organized according to SOLID, DDD, clean/hex arch principles, 
+At the time of writing I'm honestly quite unhappy with the result. I wish I had more time for making this a more complete project.
+Besides that, I'm not used to the rare occasion of creating a software service totally from scratch it was a pretty nice brain exercise. 
+
+Anyway, I love how the code looks like when it's nicely organized according to SOLID, DDD, clean/hex arch principles, 
 yet I was not fortunate enough to be able to work on such code at work since we do have lots of legacy Go codebases 
 that not really adhere to those.
 
-What I'd do next if I could:
+Next steps that should be taken:
 * try actually running this
   * locally
   * using docker/docker-compose
